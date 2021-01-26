@@ -42,6 +42,7 @@ class ImagePreviewHolder(private val binding: ItemImagePreviewBinding) :
     private val TAG = "ImagePreviewHolder"
 
     fun bind(url: String) {
-        Glide.with(itemView).load(url).error(R.drawable.ic_image_preview_error).into(binding.image)
+        Glide.with(itemView).load(url).placeholder(R.drawable.ic_image_preview_holder)
+            .error(R.drawable.ic_image_preview_error).into(binding.image)
     }
 }
