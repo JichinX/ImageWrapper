@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'maven-publish'
 }
 
 android {
@@ -50,4 +51,48 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError = false
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+def libVersion = '1.0.0-SNAPSHOT'
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            aar(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+                artifact sourcesJar
+                artifact javadocJar
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = 'me.xujichang.lib'
+                artifactId = rootProject.name.toLowerCase()
+                version = libVersion
+            }
+        }
+        repositories {
+            maven {
+                name = "company"
+                url = libVersion.toLowerCase().endsWith('snapshot') ? COMPANY_SNAPSHOT : COMPANY_RELEASE
+                credentials {
+                    username = 'xujichang'
+                    password = 'hsl521xjc'
+                }
+            }
+        }
+    }
 }
