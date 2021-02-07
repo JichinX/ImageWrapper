@@ -31,6 +31,10 @@ class ImageWrapperActivity : AppCompatActivity() {
                         ImagePreviewFragment.URL,
                         intent.getStringArrayListExtra(ImagePreviewFragment.URL)
                     )
+                    it.putBoolean(
+                        ImagePreviewFragment.TYPE,
+                        intent.getBooleanExtra(ImagePreviewFragment.TYPE, false)
+                    )
                 }
                 obtainNavController(R.id.fragment_host).setGraph(R.navigation.nav_preview, bundle)
             }
@@ -50,6 +54,7 @@ class ImageWrapperActivity : AppCompatActivity() {
         fun createPreviewIntent(context: Context, builder: ImagePreview.Builder): Intent {
             return Intent(context, ImageWrapperActivity::class.java)
                 .also { intent ->
+                    intent.putExtra(ImagePreviewFragment.TYPE, builder.isBase64.get())
                     intent.putExtra(IMAGE_OPT, ImagePreviewFragment.FLAG)
                     intent.putStringArrayListExtra(ImagePreviewFragment.URL, builder.urlList)
                 }

@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat.finishAfterTransition
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.xujichang.image.databinding.FragmentImagePreviewBinding
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ImagePreviewFragment : Fragment() {
     private val urlList = arrayListOf<String>()
@@ -23,19 +24,23 @@ class ImagePreviewFragment : Fragment() {
         const val TAG = "ImagePreviewFragment"
         const val FLAG = "image_preview"
         const val URL = "preview_urls"
+        const val TYPE = "preview_type"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.getStringArrayList(URL)?.also { list ->
-            if (list.isEmpty()) {
-                exitPreview("图片列表为空")
-            } else {
-                urlList.clear()
-                urlList.addAll(list)
-                previewAdapter.updateList(urlList)
-            }
-        } ?: exitPreview("未获取到图片列表")
+        arguments?.apply {
+            previewAdapter.setPreviewType(getBoolean(TYPE))
+            getStringArrayList(URL)?.also { list ->
+                if (list.isEmpty()) {
+                    exitPreview("图片列表为空")
+                } else {
+                    urlList.clear()
+                    urlList.addAll(list)
+                    previewAdapter.updateList(urlList)
+                }
+            } ?: exitPreview("未获取到图片列表")
+        }
     }
 
     override fun onCreateView(
